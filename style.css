@@ -3754,3 +3754,32 @@ background-position:0% 50%;
 #indexGamesSection {
     display: none !important;
 }
+/* Website Header/Logo Image Size */
+header img, .logo img {
+    max-width: 250px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Banner Image Size */
+.banner img, .hero-banner img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+/* Game Icons Size */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.game-card img, .game-icon img, .app-icon img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 15px;
+}
+    
