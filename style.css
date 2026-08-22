@@ -4128,3 +4128,20 @@ footer img, .footer-logo, section:last-of-type img {
     margin: 15px auto !important;
 }
     
+<!-- 404 AUTO LINK FIXER SCRIPT -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Sabhi Download Buttons aur Game Cards ke links select karein
+    let allLinks = document.querySelectorAll('a');
+
+    allLinks.forEach(link => {
+        let href = link.getAttribute('href');
+        // Agar link khali hai, "#" hai, ya missing file par point kar raha hai
+        if (!href || href === "#" || href === "" || href.includes("undefined")) {
+            // Yahan apna Telegram Channel ya main APK Link daal dein
+            link.setAttribute('href', 'https://t.me/RoyalEarningLoot');
+            link.setAttribute('target', '_blank');
+        }
+    });
+});
+</script>
