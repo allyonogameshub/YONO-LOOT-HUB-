@@ -82,8 +82,30 @@ img{max-width:100%;height:auto;display:block}
 .tab-btn,.chip{flex:none;border:0;border-radius:25px;padding:8px 13px;background:#fff;font-size:12px}
 .tab-btn.active,.chip.active{background:#ffc107}
 .search-section{margin-top:12px;margin-bottom:12px}
-.search-box{display:flex;align-items:center;background:#fff;border:2px solid #d4af37;border-radius:30px;padding:10px 14px}
-.search-box input{width:100%;font-size:14px;background:transparent}
+<!-- SEARCH BAR WITH WORKING SEARCH FILTER -->
+<div class="custom-search-wrapper" style="margin: 15px 10px;">
+    <div style="display: flex; align-items: center; border: 2px solid #ff3333; background: #ffffff; border-radius: 30px; padding: 10px 18px; box-shadow: 0 2px 6px rgba(255, 51, 51, 0.15);">
+        <i class="fas fa-search" style="color: #ff3333; font-size: 16px; margin-right: 10px;"></i>
+        <input type="text" id="gameSearchBar" onkeyup="filterGames()" placeholder="Search Your Favourite Game..." style="border: none !important; outline: none !important; width: 100%; font-size: 14px; color: #333333; background: transparent;">
+    </div>
+</div>
+
+<script>
+function filterGames() {
+    let input = document.getElementById('gameSearchBar').value.toLowerCase();
+    let cards = document.querySelectorAll('.app-card, .card'); // Search all app cards
+
+    cards.forEach(card => {
+        let title = card.innerText.toLowerCase();
+        if (title.includes(input)) {
+            card.style.display = ""; // Show matching app
+        } else {
+            card.style.display = "none"; // Hide non-matching app
+        }
+    });
+}
+</script>
+    
 .filter-section{margin-top:10px;margin-bottom:18px}
 .games-heading{margin-top:10px;margin-bottom:15px}
 .games-heading h2{font-size:20px;margin:0}
