@@ -3783,3 +3783,73 @@ img {
     border-radius: 15px;
 }
     
+/* ===== GLOBAL IMAGE SIZE FIX ===== */
+
+img {
+  max-width: 100% !important;
+  height: auto !important;
+  object-fit: contain !important;
+  transform: none !important;
+}
+
+/* Logos */
+.logo img,
+.site-logo img,
+header .logo img,
+header img {
+  width: auto !important;
+  max-width: 180px !important;
+  max-height: 70px !important;
+  height: auto !important;
+}
+
+/* Game images / icons */
+.game-card img,
+.game-item img,
+.game-image,
+.game-logo,
+.game-card .game-image img {
+  width: 100% !important;
+  max-width: 120px !important;
+  height: 120px !important;
+  object-fit: contain !important;
+  margin: auto !important;
+}
+
+/* Banners */
+.banner img,
+.slider img,
+.slide img,
+.banner-slide img {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  object-fit: cover !important;
+}
+
+/* Prevent oversized images from breaking layout */
+.container img,
+.games img,
+.games-grid img,
+.card img {
+  max-width: 100% !important;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .logo img,
+  .site-logo img,
+  header .logo img,
+  header img {
+    max-width: 140px !important;
+    max-height: 55px !important;
+  }
+
+  .game-card img,
+  .game-item img,
+  .game-image,
+  .game-logo {
+    max-width: 100px !important;
+    height: 100px !important;
+  }
+}
