@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Manage Games Admin V2</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#0f172a;
+    color:#fff;
+    padding:20px;
+}
+
+h1{
+    text-align:center;
+    color:#FFD700;
+    margin-bottom:20px;
+}
+
+#gamesList{
+    max-width:1000px;
+    margin:auto;
+}
+
+.game{
+    background:#1e293b;
+    border-radius:18px;
+    padding:18px;
+    margin-bottom:20px;
+    box-shadow:0 8px 20px rgba(0,0,0,.35);
+    text-align:center;
+}
+
+.game-img{
+    width:100px;
+    height:100px;
+    border-radius:18px;
+    object-fit:cover;
+    border:3px solid #FFD700;
+    margin-bottom:12px;
+    background:#fff;
+}
+
+.game h2{
+    margin-bottom:10px;
+    color:#fff;
+}
+
+.info{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin:12px 0;
+}
+
+.info span{
+    background:#334155;
+    padding:6px 12px;
+    border-radius:30px;
+    font-size:14px;
+}
+
+.rating{
+    color:#FFD700;
+    font-size:20px;
+    margin:10px 0;
+}
+
+.btns{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px;
+    margin-top:15px;
+}
+
+button{
+    border:none;
+    padding:10px 16px;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+    color:#fff;
+}
+
+.edit{background:#f59e0b;}
+.link-edit{background:#0891b2;}
+.image-edit{background:#8b5cf6;}
+.delete{background:#ef4444;}
+.top3{background:#7c3aed;}
+.bonus{background:#16a34a;}
+.withdraw{background:#2563eb;}
+.order{background:#ea580c;}
+.badge{background:#db2777;}
+.category{
+    background:#0ea5e9;
+}
+a{
+    color:#38bdf8;
+    word-break:break-all;
+    text-decoration:none;
+}
+
+@media(max-width:700px){
+
+.game-img{
+    width:85px;
+    height:85px;
+}
+
+button{
+    width:100%;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>🎮 Manage Games Admin V2</h1>
+<!-- Search Box -->
+<div style="margin:15px 0;">
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="🔍 Search Game..."
+        onkeyup="searchGames()"
+        style="
+            width:100%;
+            padding:12px 15px;
+            border:none;
+            border-radius:12px;
+            font-size:16px;
+            outline:none;
+            background:#1f2937;
+            color:white;
+            box-sizing:border-box;
+        ">
+</div>
+  
+<div id="gamesList">
+Loading Games...
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+
+import {
+    getFirestore,
+    collection,
+    getDocs,
+    updateDoc,
+    deleteDoc,
+    doc,
+    query,
+    orderBy
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAMl53E0np-l4zF0gLFyDPtcTmStISkglI",
+    authDomain: "yonoappskiduniya.firebaseapp.com",
+    projectId: "yonoappskiduniya",
+    storageBucket: "yonoappskiduniya.firebasestorage.app",
+    messagingSenderId: "474330790853",
+    appId: "1:474330790853:web:da1f01d00a7ffedbc4e9ac"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const gamesList = document.getElementById("gamesList");
+  async function loadGames(){
+
+    gamesList.innerHTML = "";
+
+    const q = query(
+        collection(db,"games"),
+        orderBy("order","asc")
+    );
+
+    const snapshot = await getDocs(q);
+
+    if(snapshot.empty){
+        gamesList.innerHTML = `
+        <h2 style="text-align:center;color:#FFD700;">
+            No Games Found
+        </h2>`;
+        return;
+    }
+
+    snapshot.forEach((game)=>{
+
+        const data = game.data();
+
+        gamesList.innerHTML += `
+
+<div class="game"
+     data-top="${data.topPosition || 0}"
+     data-name="${(data.name || '').toLowerCase()}">
+
+<img
+class="game-img"
+src="${data.image ? (data.image.startsWith('http') ? data.image : data.image.startsWith('images/') ? data.image : 'images/' + data.image) : 'images/logo.png'}"
+alt="${data.name || 'Game'}"
+onerror="this.onerror=null;this.src='images/logo.png';">
+
+<h2>${data.name}</h2>
+
+<div class="rating">
+${data.rating || "⭐⭐⭐⭐⭐"}
+</div>
+
+<div class="info">
+
+<span>🏷 ${data.badge || "NEW"}</span>
+
+<span>Sing Up Bonus  ₹${data.reward || "58"}</span>
+
+<span>💰 Min Withdraw ${data.withdraw || "100"}</span>
+
+<span>🔢 ${data.order || 999}</span>
+
+<span>⭐ Top ${data.topPosition || 0}</span>
+
+</div>
+
+<p>
+<a href="${data.link}" target="_blank">
+${data.link}
+</a>
+</p>
+
+<div class="btns">
+<button class="edit"
+onclick="editGame(
+'${game.id}',
+'${data.name}',
+'${data.image}',
+'${data.link}',
+'${data.rating || "⭐⭐⭐⭐⭐"}',
+'${data.order || 999}',
+'${data.badge || "NEW"}',
+'${data.reward || "Sing Up Bonus"}',
+'${data.withdraw || "100"}',
+'${data.bonusIcon || "🎁"}',
+'${data.minText || "Min.Withdraw"}',
+'${data.topPosition || 0}'
+)">
+✏️ Edit
+</button>
+<button class="edit"
+onclick="editGameName('${game.id}','${data.name}')">
+📝 Game Name
+</button>
+<button class="link-edit"
+onclick="editGameLink('${game.id}','${data.link || ""}')">
+🔗 Game Link
+</button>
+
+<button class="image-edit"
+onclick="editGameImage('${game.id}','${data.image || ""}')">
+🖼️ PNG Name
+</button>
+<button class="delete"
+onclick="deleteGame('${game.id}')">
+🗑 Delete
+</button>
+
+<button class="top3"
+onclick="setTopGame('${game.id}')">
+⭐ Top 3
+</button>
+
+<button class="bonus"
+onclick="editBonus('${game.id}','${data.reward || "58"}')">
+🎁 Bonus
+</button>
+
+<button class="withdraw"
+onclick="editWithdraw('${game.id}','${data.withdraw || "100"}')">
+💰 Withdraw
+</button>
+
+<button class="order"
+onclick="editOrder('${game.id}','${data.order || 999}')">
+🔢 Order
+</button>
+
+<button class="badge"
+onclick="editBadge('${game.id}','${data.badge || "NEW"}')">
+🏷 Badge
+</button>
+<button class="category"
+onclick="editCategory('${game.id}','${data.category || "all"}')">
+📂 Category
+</button>
+</div>
+
+</div>
+
+`;
+
+    });
+
+  }
+  window.editGame = async function(
+id,
+name,
+image,
+link,
+rating,
+order,
+badge,
+reward,
+withdraw,
+bonusIcon,
+minText,
+topPosition
+
+    
+){
+
+const newName = prompt("Game Name", name);
+if(newName===null) return;
+
+const newImage = prompt("Game Image URL", image);
+if(newImage===null) return;
+
+const newLink = prompt("Game Link", link);
+if(newLink===null) return;
+
+const newRating = prompt("Rating", rating || "⭐⭐⭐⭐⭐");
+if(newRating===null) return;
+
+const newOrder = prompt("Game Order", order || 999);
+if(newOrder===null) return;
+
+const newBadge = prompt("Badge", badge || "NEW");
+if(newBadge===null) return;
+
+const newReward = prompt("Bonus Amount", reward || "58");
+if(newReward===null) return;
+
+const newWithdraw = prompt("Minimum Withdraw", withdraw || "100");
+if(newWithdraw===null) return;
+
+const newBonusIcon = prompt("Bonus Icon", bonusIcon || "🎁");
+if(newBonusIcon===null) return;
+
+const newMinText = prompt("Minimum Text", minText || "Min");
+if(newMinText===null) return;
+
+const newTop = prompt("Top Position (0-3)", topPosition || 0);
+if(newTop===null) return;
+
+await updateDoc(doc(db,"games",id),{
+    name:newName,
+    image:newImage,
+    link:newLink,
+    rating:newRating,
+    order:Number(newOrder),
+    badge:newBadge,
+    reward:newReward,
+    withdraw:newWithdraw,
+    bonusIcon:newBonusIcon,
+    minText:newMinText,
+    topPosition:Number(newTop)
+});
+
+alert("✅ Game Updated Successfully");
+
+loadGames();
+
+};
+  window.editCategory = async function(id,current){
+
+const value = prompt(
+"Category\n\nall\nnew\nupcoming",
+current || "all"
+);
+
+if(value===null) return;
+
+await updateDoc(doc(db,"games",id),{
+category:value.toLowerCase()
+});
+
+alert("✅ Category Updated");
+
+loadGames();
+
+};
+  window.deleteGame = async function(id){
+
+    const ok = confirm("Delete this game?");
+
+    if(!ok) return;
+
+    await deleteDoc(doc(db,"games",id));
+
+    alert("🗑️ Game Deleted Successfully");
+
+    loadGames();
+
+};
+window.editGameName = async function(id,currentName){
+
+    const newName = prompt("Enter New Game Name", currentName);
+
+    if(newName === null) return;
+
+    const cleanName = newName.trim();
+
+    if(cleanName === ""){
+        alert("❌ Game Name empty nahi ho sakta");
+        return;
+    }
+
+    await updateDoc(doc(db,"games",id),{
+        name: cleanName
+    });
+
+    alert("✅ Game Name Updated");
+
+    loadGames();
+};
+window.editGameLink = async function(id,current){
+
+    const value = prompt("Enter New Game Link", current || "");
+
+    if(value === null) return;
+
+    const cleanLink = value.trim();
+
+    if(cleanLink === ""){
+        alert("❌ Game Link empty nahi ho sakta");
+        return;
+    }
+
+    await updateDoc(doc(db,"games",id),{
+        link: cleanLink
+    });
+
+    alert("✅ Game Link Updated");
+
+    loadGames();
+};
+
+window.editGameImage = async function(id,current){
+
+    const value = prompt(
+        "Enter PNG/Image Name or URL\n\nExample: game.png\nOr: images/game.png",
+        current || ""
+    );
+
+    if(value === null) return;
+
+    const cleanImage = value.trim();
+
+    if(cleanImage === ""){
+        alert("❌ PNG Name empty nahi ho sakta");
+        return;
+    }
+
+    await updateDoc(doc(db,"games",id),{
+        image: cleanImage
+    });
+
+    alert("✅ PNG Name Updated");
+
+    loadGames();
+};
+
+window.editBonus = async function(id,current){
+
+    const value = prompt("Bonus Amount", current);
+
+    if(value===null) return;
+
+    await updateDoc(doc(db,"games",id),{
+        reward:value
+    });
+
+    loadGames();
+
+};
+
+window.editWithdraw = async function(id,current){
+
+    const value = prompt("Minimum Withdraw", current);
+
+    if(value===null) return;
+
+    await updateDoc(doc(db,"games",id),{
+        withdraw:value
+    });
+
+    loadGames();
+
+};
+
+window.editOrder = async function(id,current){
+
+    const value = prompt("Game Order", current);
+
+    if(value===null) return;
+
+    await updateDoc(doc(db,"games",id),{
+        order:Number(value)
+    });
+
+    loadGames();
+
+};
+
+window.editBadge = async function(id,current){
+
+    const value = prompt("Badge (NEW/HOT/VIP/SOON)", current);
+
+    if(value===null) return;
+
+    await updateDoc(doc(db,"games",id),{
+        badge:value
+    });
+
+    loadGames();
+
+};
+
+window.setTopGame = async function(id){
+
+    const position = prompt(
+`Top Position
+
+1 = Top #1
+2 = Top #2
+3 = Top #3
+0 = Remove`,
+    "1"
+    );
+
+    if(position===null) return;
+
+    await updateDoc(doc(db,"games",id),{
+        topPosition:Number(position)
+    });
+
+    alert("⭐ Top Position Updated");
+
+    loadGames();
+
+};
+  /* ---------- TOP GAME HIGHLIGHT ---------- */
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+const style=document.createElement("style");
+
+style.innerHTML=`
+.game{
+    transition:none !important;
+    transform:none !important;
+
+
+}
+
+
+
+.game.top1{
+border:3px solid gold;
+background:#3b2f00;
+}
+
+.game.top2{
+border:3px solid silver;
+background:#2d3748;
+}
+
+.game.top3{
+border:3px solid #cd7f32;
+background:#3a2b1b;
+}
+
+`;
+
+document.head.appendChild(style);
+
+});
+
+async function refreshTopHighlight(){
+
+document.querySelectorAll(".game").forEach(card=>{
+
+const top=card.dataset.top;
+
+card.classList.remove("top1","top2","top3");
+
+if(top=="1") card.classList.add("top1");
+
+if(top=="2") card.classList.add("top2");
+
+if(top=="3") card.classList.add("top3");
+
+});
+
+}
+  /* ---------- IMAGE FALLBACK + FINAL REFRESH ---------- */
+
+function fixImages(){
+
+document.querySelectorAll(".game-img").forEach(img=>{
+
+img.onerror=function(){
+
+this.src="images/logo.png";
+
+};
+
+});
+
+}
+
+async function refreshUI(){
+
+fixImages();
+
+await refreshTopHighlight();
+
+}
+
+
+  /* ---------- START APP ---------- */
+
+loadGames();
+fixImages();
+refreshTopHighlight();
+
+    window.searchGames = function() {
+    const keyword = document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase();
+
+    document.querySelectorAll(".game").forEach(game => {
+        const name = game.dataset.name || "";
+
+        if (name.includes(keyword)) {
+            game.style.display = "";
+        } else {
+            game.style.display = "none";
+        }
+    });
+  }
+</script>
+
+</body>
+</html>
