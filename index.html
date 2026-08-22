@@ -1149,7 +1149,17 @@ SCRIPTS
 
 <script type="module" src="script.js"></script>
 <script type="module" src="firebase.js"></script>
-
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('img').forEach(img => {
+      img.removeAttribute('width');
+      img.removeAttribute('height');
+      img.style.setProperty('max-width', '100%', 'important');
+      img.style.setProperty('height', 'auto', 'important');
+    });
+  });
+</script>
+    
 </body>
 
         </html>
