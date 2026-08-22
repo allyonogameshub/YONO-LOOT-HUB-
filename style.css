@@ -4119,3 +4119,12 @@ footer img, .footer-logo, section:last-of-type img {
     margin: 15px auto !important;
 }
     
+/* Footer Banner Logo Size Fix */
+footer img, .footer-logo, section:last-of-type img {
+    max-width: 90px !important;
+    height: auto !important;
+    border-radius: 16px !important;
+    display: block !important;
+    margin: 15px auto !important;
+}
+    
