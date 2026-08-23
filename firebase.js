@@ -24,7 +24,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const gamesRef = collection(db, "games");
+const gamesRef = collection(db, "gan");
 
 console.log("✅ Manage Games Firebase connected:", firebaseConfig.projectId);
 
