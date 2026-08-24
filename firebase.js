@@ -55,10 +55,12 @@ const snapshot = ganSnapshot;
         } else {
             console.error("❌ Game renderer not ready.");
         }
-    } catch (error) {
+        } catch (error) {
+
         console.error("❌ Firestore Error:", error);
 
         const container = document.getElementById("firebaseGamesList");
+
         if (container) {
             container.innerHTML = `
                 <div class="game-card firebase-game-card">
@@ -69,10 +71,25 @@ const snapshot = ganSnapshot;
                         </div>
                     </div>
                 </div>`;
-            }
         }
     }
 }
+
+window.addEventListener("load", () => {
+
+    const waitForRenderer = () => {
+
+        if (typeof window.renderFirebaseGames === "function") {
+            loadGames();
+        } else {
+            setTimeout(waitForRenderer, 50);
+        }
+
+    };
+
+    waitForRenderer();
+
+});
 
 window.addEventListener("load", () => {
     const waitForRenderer = () => {
