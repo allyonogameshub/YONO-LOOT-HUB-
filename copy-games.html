@@ -1,1 +1,88 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Copy Games</title>
+</head>
+<body>
+  <h2>Copying games...</h2>
+  <pre id="status"></pre>
+
+<script type="module">
+
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  addDoc
+} from
+"https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCZjFrVRUxmIfyYHxihzndc6czss-NdHcg",
+    authDomain: "allnewyonogamessite.firebaseapp.com",
+    projectId: "allnewyonogamessite",
+    storageBucket: "allnewyonogamessite.firebasestorage.app",
+    messagingSenderId: "456817262685",
+    appId: "1:456817262685:web:0966ee32453f8d7daccdb4"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const status = document.getElementById("status");
+
+async function copyGames(){
+
+    try {
+
+        status.textContent = "Reading old games...\n";
+
+        // OLD collection
+        const oldSnapshot =
+            await getDocs(collection(db, "games"));
+
+        status.textContent +=
+            `Found ${oldSnapshot.size} old games.\n\n`;
+
+        let count = 0;
+
+        for (const docSnap of oldSnapshot.docs) {
+
+            const data = docSnap.data();
+
+            // Copy same data into NEW collection
+            await addDoc(
+                collection(db, "gan"),
+                data
+            );
+
+            count++;
+
+            status.textContent +=
+                `Copied ${count}/${oldSnapshot.size}: ${data.name || docSnap.id}\n`;
+        }
+
+        status.textContent +=
+            `\n✅ DONE — ${count} games copied to gan.\n`;
+
+        status.textContent +=
+            `\n⚠️ OLD games collection was NOT modified.`;
+
+    } catch(error) {
+
+        console.error(error);
+
+        status.textContent +=
+            `\n❌ ERROR:\n${error.message}`;
+    }
+}
+
+copyGames();
+
+</script>
+</body>
+</html>
