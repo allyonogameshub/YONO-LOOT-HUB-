@@ -172,6 +172,9 @@ function getVisibleGames() {
 // =====================================
 
 function renderFirebaseGames(games) {
+
+    allFirebaseGames = games;
+
     if (!firebaseContainer) return;
 
     firebaseContainer.innerHTML = "";
