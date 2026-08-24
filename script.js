@@ -444,3 +444,23 @@ function animateCards() {
 window.addEventListener("load", () => {
     updateGameCount();
 });
+// =====================================
+// SHOW ONLY FIREBASE GAMES
+// HIDE OLD INDEX GAMES
+// =====================================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const indexGames = document.getElementById("indexGamesSection");
+
+    if (indexGames) {
+        indexGames.style.display = "none";
+    }
+
+    const firebaseGames = document.getElementById("firebaseGamesSection");
+
+    if (firebaseGames) {
+        firebaseGames.style.display = "block";
+    }
+
+});
