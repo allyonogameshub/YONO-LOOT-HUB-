@@ -171,7 +171,7 @@ function getVisibleGames() {
 // RENDER
 // =====================================
 
-function renderFirebaseGames(games = getVisibleGames()) {
+function renderFirebaseGames(games) {
     if (!firebaseContainer) return;
 
     firebaseContainer.innerHTML = "";
