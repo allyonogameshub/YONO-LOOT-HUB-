@@ -30,7 +30,7 @@ console.log("✅ Manage Games Firebase connected:", firebaseConfig.projectId);
 
 async function loadGames() {
     try {
-        const snapshot = await getDocs(query(gamesRef, orderBy("order", "asc")));
+        const snapshot = await getDocs(collection(db, "gan"));
 
         const games = [];
         snapshot.forEach(doc => {
