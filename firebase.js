@@ -41,7 +41,7 @@ async function loadGames() {
         });
 
         console.log(`✅ Games loaded: ${games.length}`);
-
+        alert("Firebase se games aaye: " + games.length);
         if (typeof window.renderFirebaseGames === "function") {
             window.renderFirebaseGames(games);
         } else {
