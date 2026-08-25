@@ -7,12 +7,14 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/fireba
 import {
     getFirestore,
     collection,
-    getDocs,
-    query,
-    orderBy
+    getDocs
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
-// This is the SAME Firebase project used by manage-games-updated.html.
+
+// =====================================
+// FIREBASE CONFIG
+// =====================================
+
 const firebaseConfig = {
     apiKey: "AIzaSyCZjFrVRUxmIfyYHxihzndc6czss-NdHcg",
     authDomain: "allnewyonogamessite.firebaseapp.com",
@@ -22,79 +24,109 @@ const firebaseConfig = {
     appId: "1:456817262685:web:0966ee32453f8d7daccdb4"
 };
 
+
+// =====================================
+// FIREBASE START
+// =====================================
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const gamesRef = collection(db, "gan");
 
-console.log("✅ Manage Games Firebase connected:", firebaseConfig.projectId);
+
+// =====================================
+// LOAD MANAGE GAMES
+// IMPORTANT: collection = games
+// =====================================
 
 async function loadGames() {
+
     try {
 
-        firebaseContainer = document.getElementById("firebaseGamesList");
+        console.log("🔥 Connecting to Manage Games Firebase...");
 
-        const ganSnapshot = await getDocs(collection(db, "gan"));
-        const gamesSnapshot = await getDocs(collection(db, "games"));
+        const snapshot = await getDocs(
+            collection(db, "games")
+        );
 
         const games = [];
+
         snapshot.forEach(doc => {
+
             games.push({
                 id: doc.id,
                 ...doc.data()
             });
+
         });
 
-        console.log(`✅ Games loaded: ${games.length}`);
-        alert("Firebase se games aaye: " + games.length);
+
+        console.log("✅ Firebase games loaded:", games.length);
+
+
+        // =====================================
+        // SEND GAMES TO EXISTING RENDERER
+        // =====================================
+
         if (typeof window.renderFirebaseGames === "function") {
+
             window.renderFirebaseGames(games);
+
+            console.log(
+                "✅ Games rendered:",
+                games.length
+            );
+
         } else {
-            console.error("❌ Game renderer not ready.");
+
+            // Renderer not ready yet
+            console.log(
+                "⏳ Waiting for game renderer..."
+            );
+
+            setTimeout(loadGames, 100);
+
         }
-        } catch (error) {
 
-        console.error("❌ Firestore Error:", error);
+    } catch (error) {
 
-        const container = document.getElementById("firebaseGamesList");
+        console.error(
+            "❌ Firebase Error:",
+            error
+        );
+
+
+        // NO ALERT
+        // Show error only inside game area
+
+        const container =
+            document.getElementById("firebaseGamesList");
 
         if (container) {
+
             container.innerHTML = `
                 <div class="game-card firebase-game-card">
                     <div class="game-left">
                         <div class="game-info">
-                            <h3>Games could not be loaded</h3>
-                            <small>Please check Firebase rules / connection.</small>
+                            <h3>Games temporarily unavailable</h3>
+                            <small>Please try again.</small>
                         </div>
                     </div>
-                </div>`;
+                </div>
+            `;
+
         }
+
     }
+
 }
 
-window.addEventListener("load", () => {
 
-    const waitForRenderer = () => {
-
-        if (typeof window.renderFirebaseGames === "function") {
-            loadGames();
-        } else {
-            setTimeout(waitForRenderer, 50);
-        }
-
-    };
-
-    waitForRenderer();
-
-});
+// =====================================
+// START AFTER PAGE LOAD
+// =====================================
 
 window.addEventListener("load", () => {
-    const waitForRenderer = () => {
-        if (typeof window.renderFirebaseGames === "function") {
-            loadGames();
-        } else {
-            setTimeout(waitForRenderer, 50);
-        }
-    };
 
-    waitForRenderer();
+    loadGames();
+
 });
