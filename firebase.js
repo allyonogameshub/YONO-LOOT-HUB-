@@ -30,15 +30,11 @@ console.log("✅ Manage Games Firebase connected:", firebaseConfig.projectId);
 
 async function loadGames() {
     try {
+
+        firebaseContainer = document.getElementById("firebaseGamesList");
+
         const ganSnapshot = await getDocs(collection(db, "gan"));
-const gamesSnapshot = await getDocs(collection(db, "games"));
-
-alert(
-    "GAN = " + ganSnapshot.size +
-    "\nGAMES = " + gamesSnapshot.size
-);
-
-const snapshot = ganSnapshot;
+        const gamesSnapshot = await getDocs(collection(db, "games"));
 
         const games = [];
         snapshot.forEach(doc => {
